@@ -1,9 +1,11 @@
+import type { ISidebarItem } from "@/types";
 
-const generateRoutes = () => {
-    return (
-        <div>
-            <h1>Generate Routes page</h1>
-        </div>
+const generateRoutes = (sidebarItems : ISidebarItem[]) => {
+    return sidebarItems.flatMap((section) => 
+        section.items.map((route) => ({
+            path: route.url,
+            Component: route.component,
+        }))
     );
 };
 

@@ -8,6 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import config from "@/config";
 import { cn } from "@/lib/utils";
 import { useLoginMutation } from "@/redux/features/auth/auth.api";
 import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
@@ -29,6 +30,7 @@ export function LoginForm({
     } catch (err) {
       console.error(err);
 
+
       // this is not recommended
         if (err.data.message === "Password does not match") {
         toast.error("Invalid credentials")
@@ -38,6 +40,9 @@ export function LoginForm({
         toast.error("Your account is not verified");
         navigate("/verify", { state: data.email });
       }
+      // if (data.accessToken) {
+      //   navigate("/")
+      // }
     
     }
   };
@@ -102,7 +107,13 @@ export function LoginForm({
           </span>
         </div>
 
+        {/* http://localhost:5000/api/v1/auth/google */}
+
         <Button
+          // onClick={() => window.open(`${config.baseUrl}/auth/google`)}
+          onClick={() => {
+            window.location.href = `${config.baseUrl}/auth/google`;
+          }}
           type="button"
           variant="outline"
           className="w-full cursor-pointer"

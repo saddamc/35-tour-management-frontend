@@ -38,7 +38,7 @@ export function RegisterForm({
       confirmPassword: ""
     }
   })
- 
+
   const onSubmit = async (data: z.infer<typeof registerSchema>) => {
 
     const userInfo = {
@@ -47,14 +47,14 @@ export function RegisterForm({
       password: data.password,
     }
 
-   try {
-     const result = await register(userInfo).unwrap();
-     console.log(result);
-     toast.success("User created successfully")
-     navigate("/verify")
-   } catch (error) {
-    console.error(error)
-   }
+    try {
+      const result = await register(userInfo).unwrap();
+      console.log(result);
+      toast.success("User created successfully")
+      navigate("/verify")
+    } catch (error) {
+      console.error(error)
+    }
   }
   
 
