@@ -1,16 +1,16 @@
 
-import type { Theme } from "@/providers/theme.provider";
-import { createContext } from "react";
 
-type ThemeProviderState = {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-};
+// import { createContext } from "react";
 
-const initialState: ThemeProviderState = {
-  theme: "system",
-  setTheme: () => null,
-};
+// type ThemeProviderState = {
+//   theme: Theme;
+//   setTheme: (theme: Theme) => void;
+// };
 
-export const ThemeProviderContext =
-  createContext<ThemeProviderState>(initialState);
+// const initialState: ThemeProviderState = {
+//   theme: "system",
+//   setTheme: () => null,
+// };
+
+// export const ThemeProviderContext =
+//   createContext<ThemeProviderState>(initialState);

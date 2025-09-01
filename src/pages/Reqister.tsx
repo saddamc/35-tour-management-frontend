@@ -1,5 +1,6 @@
 import Logo from "@/assets/icons/Logo";
 import TravelRegister from "@/assets/images/travel-register.jpg";
+import { RegisterForm } from "@/components/modules/Authentication/RegisterForm";
 import { Link } from "react-router";
 
 
@@ -21,7 +22,7 @@ export default function Register() {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
-            {/* <RegisterForm /> */}
+            <RegisterForm />
           </div>
         </div>
       </div>
