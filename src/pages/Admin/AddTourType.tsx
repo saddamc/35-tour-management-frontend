@@ -47,7 +47,7 @@ const AddTourType = () => {
 
   // total page 2 => [0, 0]
   const totalPage = data?.meta?.totalPage || 1;
-  //   console.log(totalPage);
+    console.log(totalPage);
 
   return (
     <div className="max-w-7xl mx-auto px-5 w-full">
@@ -66,7 +66,7 @@ const AddTourType = () => {
           </TableHeader>
           <TableBody>
             {data?.data?.map((item: { _id: string; name: string }) => (
-              <TableRow>
+              <TableRow key={item._id}>
                 <TableCell className="font-medium w-full">
                   {item?.name}
                 </TableCell>

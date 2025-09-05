@@ -33,7 +33,7 @@ export function AddDivisionModal() {
     const [image, setImage] = useState<File | null>(null)
     const [addDivision] = useAddDivisionMutation()
 
-    console.log("inside add division uploader", image)
+    // console.log("inside add division uploader", image)
     
     const form = useForm({
         defaultValues: {

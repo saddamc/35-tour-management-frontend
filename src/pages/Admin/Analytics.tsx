@@ -158,7 +158,7 @@ const Analytics = () => {
                   fill="#8884d8"
                   label={({ name, percent }) => `${name} ${(percent ? (percent * 100).toFixed(0) : '0')}%`}
                 >
-                  {tourTypeChartData.map((entry, index) => (
+                  {tourTypeChartData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>

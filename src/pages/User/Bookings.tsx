@@ -113,7 +113,7 @@ const Bookings = () => {
                   fill="#8884d8"
                   label
                 >
-                  {mockTourTypeData.map((entry, index) => (
+                  {mockTourTypeData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
