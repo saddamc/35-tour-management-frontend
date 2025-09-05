@@ -47,7 +47,7 @@ const AddTourType = () => {
 
   // total page 2 => [0, 0]
   const totalPage = data?.meta?.totalPage || 1;
-    console.log(totalPage);
+    // console.log(totalPage);
 
   return (
     <div className="max-w-7xl mx-auto px-5 w-full">
@@ -87,7 +87,7 @@ const AddTourType = () => {
         </Table>
       </div>
       {/* Pagination  */}
-      {totalPage > 1 && (
+      {/* {totalPage > 1 && ( */}
         <div className="mt-5">
           <div>
             <Pagination>
@@ -129,7 +129,7 @@ const AddTourType = () => {
             </Pagination>
           </div>
         </div>
-      )}
+      {/* )} */}
     </div>
   );
 };
