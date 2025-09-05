@@ -61,6 +61,15 @@ export default function Success() {
                 isErrorStatus ? 'bg-red-50 border border-red-200' : 'bg-green-100'
             }`}>
                 <div className="text-center">
+                    {/* Debug Info */}
+                    <div className="bg-gray-100 p-3 rounded mb-4 text-left text-xs font-mono">
+                        <div>Status: {status}</div>
+                        <div>Transaction ID: {transactionId}</div>
+                        <div>Message: {message}</div>
+                        <div>Amount: {amount}</div>
+                        <div>Has Required Params: {hasRequiredParams ? 'Yes' : 'No'}</div>
+                        <div>Is Error Status: {isErrorStatus ? 'Yes' : 'No'}</div>
+                    </div>
                     {!isErrorStatus ? (
                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,6 +115,26 @@ export default function Success() {
                         <p className="text-center text-gray-700 mb-4">
                             Amount Paid: ${parseFloat(amount).toFixed(2)}
                         </p>
+                    )}
+
+                    {/* Booking Status Check */}
+                    {!isErrorStatus && status === 'success' && (
+                        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                            <p className="text-sm text-blue-700 mb-2">
+                                ✅ Payment completed successfully!
+                            </p>
+                            <p className="text-xs text-blue-600 mb-3">
+                                Your booking should appear in "My Bookings" shortly. Verify the transaction in your bank statement.
+                            </p>
+                            <div className="flex gap-2 justify-center text-xs">
+                                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                    Status: Processing
+                                </span>
+                                <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                                    Booking: Confirming
+                                </span>
+                            </div>
+                        </div>
                     )}
 
                     <div className="space-x-3">

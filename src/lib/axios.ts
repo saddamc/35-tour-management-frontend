@@ -1,5 +1,5 @@
 import config from "@/config";
-import axios, { type AxiosRequestConfig } from "axios";
+import axios from "axios"; // { type AxiosRequestConfig }
 
 
 export const axiosInstance = axios.create({
@@ -20,26 +20,26 @@ axiosInstance.interceptors.request.use(function (config) {
     return Promise.reject(error);
   },
 );
-// ✅ step-3 for save accessToken for new token
-let isRefreshing = false;
+// // ✅ step-3 for save accessToken for new token
+// let isRefreshing = false;
 
-let pendingQuene: {
-  resolve: (value: unknown) => void;
-  reject: (value: unknown) => void;
-}[] = [];
+// let pendingQuene: {
+//   resolve: (value: unknown) => void;
+//   reject: (value: unknown) => void;
+// }[] = [];
 
 // ✅ step - 5
-const processQueue = (error: unknown) => {
-  pendingQuene.forEach((promise) => {
-    if (error) {
-      promise.reject(error)
-    } else {
-      promise.resolve(null);
-    }
-  });
+// const processQueue = (error: unknown) => {
+//   pendingQuene.forEach((promise) => {
+//     if (error) {
+//       promise.reject(error)
+//     } else {
+//       promise.resolve(null);
+//     }
+//   });
 
-  pendingQuene = [];
-}
+//   pendingQuene = [];
+// }
 
 // Add a response interceptor
 axiosInstance.interceptors.response.use(function onFulfilled(response) {
@@ -53,59 +53,59 @@ axiosInstance.interceptors.response.use(function onFulfilled(response) {
     return Promise.reject(error);
 });
   
-//✅ step-1, new toke Generate
-axiosInstance.interceptors.response.use(
-  (response) => { 
-    console.log("response successfully")
-    return response
-  },
-  async (error) => {
-    // console.log("request Fail", error.response);
+// //✅ step-1, new toke Generate
+// axiosInstance.interceptors.response.use(
+//   (response) => { 
+//     console.log("response successfully")
+//     return response
+//   },
+//   async (error) => {
+//     // console.log("request Fail", error.response);
 
-    //✅ step-2
-    const originalRequest = error.config as AxiosRequestConfig &
-    { _retry: boolean; };  // step - 8
-    // console.log("Axios request config:",originalRequest)
+//     //✅ step-2
+//     const originalRequest = error.config as AxiosRequestConfig &
+//     { _retry: boolean; };  // step - 8
+//     // console.log("Axios request config:",originalRequest)
 
-    if (
-      error.response.status === 500 &&
-      error.response.data.message === "jwt expired" && 
-      !originalRequest._retry // step - 8
-    )
-    {
-      console.log("Your toke is expired")
+//     if (
+//       error.response.status === 500 &&
+//       error.response.data.message === "jwt expired" && 
+//       !originalRequest._retry // step - 8
+//     )
+//     {
+//       console.log("Your toke is expired")
 
-      originalRequest._retry = true;   // step - 8
+//       originalRequest._retry = true;   // step - 8
       
-      // ✅ step-4
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          pendingQuene.push({resolve, reject})
-        }).then(() => axiosInstance(originalRequest))
-          .catch((error) => Promise.reject(error))
-      }
-      isRefreshing = true;  
+//       // ✅ step-4
+//       if (isRefreshing) {
+//         return new Promise((resolve, reject) => {
+//           pendingQuene.push({resolve, reject})
+//         }).then(() => axiosInstance(originalRequest))
+//           .catch((error) => Promise.reject(error))
+//       }
+//       isRefreshing = true;  
 
-      try {
-        const res = await axiosInstance.post("/auth/refresh-token")
-        console.log("new token arrived:", res);
+//       try {
+//         const res = await axiosInstance.post("/auth/refresh-token")
+//         console.log("new token arrived:", res);
 
-        processQueue(null); // step - 6
+//         processQueue(null); // step - 6
 
-        return axiosInstance(originalRequest)  // step - 2 then we see ok,but
-      } catch (error) {
-        //✅ step - 7
-        // console.error(error)
-        processQueue(error);
+//         return axiosInstance(originalRequest)  // step - 2 then we see ok,but
+//       } catch (error) {
+//         //✅ step - 7
+//         // console.error(error)
+//         processQueue(error);
         
-        return Promise.reject(error);
-      } finally {
-        isRefreshing = false;
-      }
-    }
+//         return Promise.reject(error);
+//       } finally {
+//         isRefreshing = false;
+//       }
+//     }
 
 
-    // For Everything
-    return Promise.reject(error);
-  }
-)
+//     // For Everything
+//     return Promise.reject(error);
+//   }
+// )

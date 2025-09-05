@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Loading from "@/components/ui/Loading";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useGetUserBookingsQuery } from "@/redux/features/auth/Booking/booking.api";
 
@@ -7,14 +9,16 @@ import { format } from "date-fns";
 import { Bar, BarChart, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export default function Bookings() {
-  const { data:bookings, isLoading, error } = useGetUserBookingsQuery({user});
+
+  const { data:bookings, isLoading, error } = useGetUserBookingsQuery({});
 
   console.log("Booking Query State:", { bookings, isLoading, error });
 
-  if (isLoading) return <p>Loading analytics...</p>;
+  if (isLoading) return <Loading />;
 
   // Handle authentication error
-  if (error?.status === 403 || error?.message?.includes('No Token')) {
+  if (error) {
+    console.error("Authentication or data error:", error);
     return (
       <div className="p-6">
         <Card>
@@ -32,11 +36,9 @@ export default function Bookings() {
     );
   }
 
-  if (error) return <p>Error loading data: {error.message || 'Unknown error'}</p>;
-
   console.log("Bookings data:", bookings);
 
-  // Handle case when data is not yet loaded
+  // Handle case when data is not yet loaded or empty
   if (!bookings) return <p>No bookings data available</p>;
 
   // 📌 Transform Data (ensure bookings is an array)

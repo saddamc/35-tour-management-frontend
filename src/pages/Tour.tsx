@@ -28,8 +28,8 @@ export default function Tours() {
             >
                 <div className="w-2/5 bg-red-500 flex-shrink-0">
                 <img
-                    src={item.images[0]}
-                    alt={item.title}
+                    src={item.images && item.images[0] ? item.images[0] : '/placeholder-image.jpg'}
+                    alt={item.title || 'Tour image'}
                     className="object-cover w-full h-full "
                 />
                 </div>
@@ -39,33 +39,33 @@ export default function Tours() {
 
                 <div className="flex items-center justify-between mb-3">
                     <span className="text-xl font-bold text-primary">
-                    From ৳{item.costFrom.toLocaleString()}
+                    From ৳{item.costFrom ? item.costFrom.toLocaleString() : 'N/A'}
                     </span>
                     <span className="text-sm text-muted-foreground">
-                    Max {item.maxGuest} guests
+                    Max {item.maxGuest || 1} guests
                     </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
                     <div>
                     <span className="font-medium">From:</span>{" "}
-                    {item.departureLocation}
+                    {item.departureLocation || 'Not specified'}
                     </div>
                     <div>
                     <span className="font-medium">To:</span>{" "}
-                    {item.arrivalLocation}
+                    {item.arrivalLocation || 'Not specified'}
                     </div>
                     <div>
                     <span className="font-medium">Duration:</span>{" "}
-                    {item.tourPlan.length} days
+                    {(item.tourPlan || []).length} days
                     </div>
                     <div>
-                    <span className="font-medium">Min Age:</span> {item.minAge}+
+                    <span className="font-medium">Min Age:</span> {item.minAge || 18}+
                     </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-4">
-                    {item.amenities.slice(0, 3).map((amenity, index) => (
+                    {(item.amenities || []).slice(0, 3).map((amenity, index) => (
                     <span
                         key={index}
                         className="px-2 py-1 bg-muted/50 text-primary text-xs rounded-full"
@@ -73,15 +73,15 @@ export default function Tours() {
                         {amenity}
                     </span>
                     ))}
-                    {item.amenities.length > 3 && (
+                    {(item.amenities || []).length > 3 && (
                     <span className="px-2 py-1 bg-muted/50 text-muted-foreground text-xs rounded-full">
-                        +{item.amenities.length - 3} more
+                        +{(item.amenities || []).length - 3} more
                     </span>
                     )}
                 </div>
 
                 <Button asChild className="w-full">
-                    <Link to={`/tours/${item._id}`}>View Details</Link>
+                    <Link to={`/tours/${item._id || item.slug || 'unknown'}`}>View Details</Link>
                 </Button>
                 </div>
             </div>
