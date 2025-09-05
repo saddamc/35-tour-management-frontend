@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import React from "react";
+import Loading, { ButtonLoading, CardLoading, FullScreenLoading, InlineLoading } from "./Loading";
 // import Loading, { ButtonLoading, CardLoading, FullScreenLoading, InlineLoading } from "./Loading";
 
 const LoadingDemo: React.FC = () => {
