@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,12 +23,17 @@ export function LoginForm({
 }: React.HTMLAttributes<HTMLDivElement>) {
   const navigate = useNavigate();
   const form = useForm();
+
   const [login] = useLoginMutation();
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
       const res = await login(data).unwrap();
-      console.log(res);
-    } catch (err) {
+      // console.log(res);
+      if (res.success) {
+        toast.success("Logged in successfully");
+        navigate("/");
+      }
+    } catch (err: any) {
       console.error(err);
 
 
@@ -39,11 +45,7 @@ export function LoginForm({
       if (err.data.message === "User is not verified") {
         toast.error("Your account is not verified");
         navigate("/verify", { state: data.email });
-      }
-      // if (data.accessToken) {
-      //   navigate("/")
-      // }
-    
+      }    
     }
   };
 

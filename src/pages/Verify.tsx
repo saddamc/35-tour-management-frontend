@@ -15,19 +15,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Dot } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import z from "zod";
 
 const FormSchema = z.object({
-  pin: z.string().min(6, {
-    message: "Your one-time password must be 6 characters.",
-  }),
+    pin: z.string().min(6, {
+        message: "Your one-time password must be 6 characters.",
+    }),
 });
 
 const Verify = () => {
     const location = useLocation();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const [email] = useState(location.state);
     const [confirmed, setConfirmed] = useState(false);
     const [sendOtp] = useSendOtpMutation();
