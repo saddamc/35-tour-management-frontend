@@ -3,10 +3,12 @@ import { useGetDivisionsQuery } from "@/redux/features/auth/Division/division.ap
 import { useGetAllToursQuery, useGetTourTypesQuery } from "@/redux/features/auth/Tour/tour.api";
 import { format } from "date-fns";
 import { Link, useParams } from "react-router";
+import { ScaleLoader } from "react-spinners";
 
 export default function TourDetails() {
     const { id } = useParams();
     const { data, isLoading } = useGetAllToursQuery({ _id: id });
+    console.log(data)
 
     const { data: divisionData } = useGetDivisionsQuery(
         {
@@ -27,7 +29,7 @@ export default function TourDetails() {
         }
     );
 
-console.log("tourType Data", tourTypeData.data[0]?.name);
+console.log("tourType Data", tourTypeData?.data[0]?.name);
 
 
 
@@ -35,7 +37,7 @@ console.log("tourType Data", tourTypeData.data[0]?.name);
     const tourData = data?.[0];
 
     if (isLoading) {
-        return <p>Loading...</p>;
+        return <div className="mx-auto justify-center items-center ml-[200px]"><ScaleLoader className="text-red-500 mx-auto"  /></div>;
     }
 
     return (
@@ -98,7 +100,7 @@ console.log("tourType Data", tourTypeData.data[0]?.name);
                 <strong>Division:</strong> {divisionData?.[0]?.name}
                 </p>
                 <p>
-                <strong>Tour Type:</strong> {tourTypeData.data[0]?.name}
+                    <strong>Tour Type:</strong> {tourTypeData?.data[0]?.name}
                 </p>
                 <p>
                 <strong>Min Age:</strong> {tourData?.minAge} years
