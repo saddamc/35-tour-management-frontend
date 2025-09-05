@@ -1,119 +1,133 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useGetAllToursQuery } from "@/redux/features/auth/Tour/tour.api";
-import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-// Mock data for demo purposes
-const mockBookingsOverTime = [
-  { month: 'Jan', bookings: 400 },
-  { month: 'Feb', bookings: 300 },
-  { month: 'Mar', bookings: 500 },
-  { month: 'Apr', bookings: 280 },
-  { month: 'May', bookings: 590 },
-  { month: 'Jun', bookings: 320 },
-];
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useGetUserBookingsQuery } from "@/redux/features/auth/Booking/booking.api";
 
-const mockTourTypeData = [
-  { name: 'Adventure', value: 400 },
-  { name: 'Culture', value: 300 },
-  { name: 'Beach', value: 300 },
-  { name: 'Mountain', value: 200 },
-];
+import { format } from "date-fns";
+import { Bar, BarChart, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+export default function Bookings() {
+  const { data:bookings, isLoading, error } = useGetUserBookingsQuery({user});
 
-const Bookings = () => {
-  const { data: toursData, isLoading, error } = useGetAllToursQuery({});
-  const totalTours = toursData?.length || 0;
-  const totalBookings = 120; // Mock
-  const totalRevenue = 15000; // Mock
+  console.log("Booking Query State:", { bookings, isLoading, error });
 
-  if (isLoading) return <div>Loading analytics...</div>;
-  if (error) return <div>Error loading analytics</div>;
+  if (isLoading) return <p>Loading analytics...</p>;
 
-  return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-
-      {/* Metric Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+  // Handle authentication error
+  if (error?.status === 403 || error?.message?.includes('No Token')) {
+    return (
+      <div className="p-6">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Tours</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalTours}</div>
-            <p className="text-xs text-muted-foreground">
-              Active tour packages
+          <CardContent className="py-8 text-center">
+            <h2 className="text-xl font-bold mb-4">Authentication Required</h2>
+            <p className="text-gray-600 mb-4">
+              You need to be logged in to view your booking analytics.
             </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalBookings}</div>
-            <p className="text-xs text-muted-foreground">
-              This month
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${totalRevenue}</div>
-            <p className="text-xs text-muted-foreground">
-              This month
+            <p className="text-sm text-gray-500">
+              Please log in to access your booking data.
             </p>
           </CardContent>
         </Card>
       </div>
+    );
+  }
+
+  if (error) return <p>Error loading data: {error.message || 'Unknown error'}</p>;
+
+  console.log("Bookings data:", bookings);
+
+  // Handle case when data is not yet loaded
+  if (!bookings) return <p>No bookings data available</p>;
+
+  // 📌 Transform Data (ensure bookings is an array)
+  const bookingsArray = Array.isArray(bookings) ? bookings : [];
+  const totalBookings = bookingsArray.length;
+
+  // Safe calculations with default fallbacks
+  const upcoming = bookingsArray.filter((b: any) => b.startDate && new Date(b.startDate) > new Date()).length;
+  const completed = bookingsArray.filter((b: any) => b.endDate && new Date(b.endDate) < new Date()).length;
+  const totalSpent = bookingsArray.reduce((sum: number, b: any) => sum + (b.price || 0) * (b.peopleCount || 1), 0);
+
+  // Group by month
+  const bookingsByMonth: Record<string, number> = {};
+  const spendingByMonth: Record<string, number> = {};
+  bookingsArray.forEach((b: any) => {
+    if (b.createdAt) {
+      const month = format(new Date(b.createdAt), "MMM yyyy");
+      bookingsByMonth[month] = (bookingsByMonth[month] || 0) + 1;
+      spendingByMonth[month] = (spendingByMonth[month] || 0) + (b.price || 0);
+    }
+  });
+
+  const bookingsByMonthData = Object.keys(bookingsByMonth).map((m) => ({
+    month: m,
+    count: bookingsByMonth[m],
+  }));
+
+  const spendingByMonthData = Object.keys(spendingByMonth).map((m) => ({
+    month: m,
+    spent: spendingByMonth[m],
+  }));
+
+  // Pie chart data by division
+  const divisionData: Record<string, number> = {};
+  bookingsArray.forEach((b: any) => {
+    if (b.division) {
+      divisionData[b.division] = (divisionData[b.division] || 0) + 1;
+    }
+  });
+  const pieData = Object.keys(divisionData).map((d) => ({
+    name: d,
+    value: divisionData[d],
+  }));
+
+  const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#00C49F"];
+
+  return (
+    <div className="grid gap-6 p-6">
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card><CardHeader><CardTitle>Total Bookings</CardTitle></CardHeader><CardContent>{totalBookings}</CardContent></Card>
+        <Card><CardHeader><CardTitle>Upcoming</CardTitle></CardHeader><CardContent>{upcoming}</CardContent></Card>
+        <Card><CardHeader><CardTitle>Completed</CardTitle></CardHeader><CardContent>{completed}</CardContent></Card>
+        <Card><CardHeader><CardTitle>Total Spent</CardTitle></CardHeader><CardContent>৳ {totalSpent}</CardContent></Card>
+      </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Bar Chart for Bookings */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
-          <CardHeader>
-            <CardTitle>Monthly Bookings</CardTitle>
-            <CardDescription>Bookings over the last 6 months</CardDescription>
-          </CardHeader>
+          <CardHeader><CardTitle>Bookings by Month</CardTitle></CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={mockBookingsOverTime}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="bookings" fill="#8884d8" />
-              </BarChart>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={bookingsByMonthData}>
+                <XAxis dataKey="month" /><YAxis /><Tooltip />
+                <Line type="monotone" dataKey="count" stroke="#8884d8" strokeWidth={2} />
+              </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        {/* Pie Chart for Tour Types */}
         <Card>
-          <CardHeader>
-            <CardTitle>Tour Types Distribution</CardTitle>
-            <CardDescription>Popular categories</CardDescription>
-          </CardHeader>
+          <CardHeader><CardTitle>Spending by Month</CardTitle></CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={spendingByMonthData}>
+                <XAxis dataKey="month" /><YAxis /><Tooltip /><Legend />
+                <Bar dataKey="spent" fill="#82ca9d" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader><CardTitle>Bookings by Division</CardTitle></CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
               <PieChart>
-                <Pie
-                  dataKey="value"
-                  isAnimationActive={false}
-                  data={mockTourTypeData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  fill="#8884d8"
-                  label
-                >
-                  {mockTourTypeData.map((_, index) => (
+                <Pie data={pieData} dataKey="value" nameKey="name" outerRadius={80} label>
+                  {pieData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -122,9 +136,34 @@ const Bookings = () => {
             </ResponsiveContainer>
           </CardContent>
         </Card>
+
+        {/* Recent Bookings Table */}
+        <Card>
+          <CardHeader><CardTitle>Recent Bookings</CardTitle></CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Tour</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Price</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {bookingsArray.slice(0, 5).map((b: any) => (
+                  <TableRow key={b.id}>
+                    <TableCell>{b.tourName}</TableCell>
+                    <TableCell>{format(new Date(b.startDate), "dd MMM yyyy")}</TableCell>
+                    <TableCell>{b.status}</TableCell>
+                    <TableCell>৳ {b.price}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
-};
-
-export default Bookings;
+}

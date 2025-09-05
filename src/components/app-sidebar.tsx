@@ -21,13 +21,13 @@ import { Link } from "react-router-dom"
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const { data: userData } = useUserInfoQuery(undefined)
-  console.log(userData)
+  // console.log(userData)
 
 
 const data = {
   navMain: getSidebarItems(userData?.data?.role)
 }
-  console.log(data)
+  // console.log(data)
 
   
   return (

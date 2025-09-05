@@ -10,6 +10,19 @@ export const bookingApi = baseApi.injectEndpoints({
         }),
         invalidatesTags: ["BOOKING"],
         }),
+        getUserBookings: builder.query({
+        query: () => ({
+            url: "/booking/my-bookings",
+            method: "GET",
+        }),
+        providesTags: ["BOOKING"],
+        transformResponse: (response) => {
+            // Handle different response structures
+            if (response.data) return response.data;
+            if (response.bookings) return response.bookings;
+            return response;
+        },
+        }),
         getTourTypes: builder.query({
         query: () => ({
             url: "/tour/tour-types",
@@ -21,4 +34,4 @@ export const bookingApi = baseApi.injectEndpoints({
     }),
 });
 
-export const { useCreateBookingMutation } = bookingApi;
+export const { useCreateBookingMutation, useGetUserBookingsQuery, useGetTourTypesQuery } = bookingApi;
